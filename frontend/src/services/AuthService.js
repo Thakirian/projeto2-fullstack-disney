@@ -9,7 +9,7 @@ const API_URL = 'http://localhost:3001/api/login';
 const login = async (email, password) => {
     // 🚨 AQUI ENTRARÁ O FETCH REAL PARA A ROTA /login DA THA
     try {
-        const response = await fetch(`${API_URL}/login`, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -10,10 +10,10 @@ const router = express.Router();
 router.post('/login', (req, res) => {
 
   // 1. Pega os dados do corpo da requisição
-  const { email, senha } = req.body;
+  const { email, password } = req.body;
 
   // 2. Validação de preenchimento 
-  if (!email || !senha) {
+  if (!email || !password) {
     return res.status(400).json({ message: "Email e senha são obrigatórios." });
   }
 
@@ -34,7 +34,7 @@ router.post('/login', (req, res) => {
     }
 
     // 5. Compara a senha enviada com a senha criptografada no banco
-    const senhaValida = bcrypt.compareSync(senha, user.senha_hash);
+    const senhaValida = bcrypt.compareSync(password, user.senha_hash);
 
     if (!senhaValida) {
       // Log de segurança 
@@ -43,6 +43,7 @@ router.post('/login', (req, res) => {
     }
 
     // 6. Se tudo estiver correto, cria o Token JWT
+    console.log('Minha chave secreta é:', process.env.JWT_SECRET);
     const token = jwt.sign(
       { id: user.id, email: user.email }, 
       process.env.JWT_SECRET, // A chave secreta do nosso .env
@@ -55,6 +56,8 @@ router.post('/login', (req, res) => {
       message: "Login bem-sucedido!", 
       token: token 
     });
+
+    
   });
 });
 

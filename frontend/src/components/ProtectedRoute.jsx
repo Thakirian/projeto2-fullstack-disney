@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Importamos o hook
+import { useAuth } from '../services/AuthContext'; // Importamos o hook
 
 // Este componente verifica se o usuário pode acessar a rota
 const ProtectedRoute = ({ element: Element }) => {

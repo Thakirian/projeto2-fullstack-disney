@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Container, CircularProgress } from '@mui/material';
-import { useAuth } from '../contexts/AuthContext'; // << NOVO IMPORT: Hook de autenticação
+import { useAuth } from '../services/AuthContext'; // << NOVO IMPORT: Hook de autenticação
 
 function LoginPage() {
   // Consumir o hook para ter acesso à função login

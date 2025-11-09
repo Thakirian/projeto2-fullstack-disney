@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // << NOVO IMPORT
+import { useAuth } from '../services/AuthContext'; // << NOVO IMPORT
 
 function NavBar() {
   // Consumir o hook para ter acesso ao estado e à função de logout

@@ -1,3 +1,5 @@
+// frontend/src/main.jsx
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
@@ -5,23 +7,25 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import disneyTheme from './theme.js';
 import './index.css';
-
-// Importa os Provedores
+import { BrowserRouter } from 'react-router-dom';
 import { SearchProvider } from './contexts/SearchContext.jsx';
-import { AuthProvider } from './contexts/AuthContext.jsx'; // << NOVO IMPORT
+import { AuthProvider } from './services/AuthContext.jsx'; 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={disneyTheme}>
-      <CssBaseline />
-      
-      {/* O AuthProvider deve ser o provedor mais externo, pois ele pode precisar de rotas */}
-      <AuthProvider> 
-        <SearchProvider>
-          <App />
-        </SearchProvider>
-      </AuthProvider>
-      
-    </ThemeProvider>
+    {/* A MUDANÇA ESTÁ AQUI: 
+      Adicionamos a propriedade "basename" para dizer ao Roteador
+      que nosso site não vive na raiz, mas sim na pasta /Disney-pedia/
+    */}
+    <BrowserRouter basename="/Disney-pedia/">
+      <ThemeProvider theme={disneyTheme}>
+        <CssBaseline />
+        <AuthProvider> 
+          <SearchProvider>
+            <App />
+          </SearchProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );

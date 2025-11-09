@@ -7,7 +7,7 @@ import AuthService from '../services/AuthService'; // << NOVO IMPORT: Para pegar
 const API_URL_INSERT = 'http://localhost:3001/api/personagens'; 
 
 function InsertPage() {
-    const [name, setName] = useState('');
+    const [nome, setName] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [films, setFilms] = useState('');
     const [tvShows, setTvShows] = useState('');
@@ -18,7 +18,7 @@ function InsertPage() {
         e.preventDefault();
         setStatusMessage(null);
 
-        if (!name || !imageUrl) {
+        if (!nome || !imageUrl) {
             setStatusMessage({ type: 'error', message: 'O Nome e a URL da Imagem são obrigatórios.' });
             return;
         }
@@ -27,7 +27,7 @@ function InsertPage() {
 
         // 1. Prepara os dados (transforma strings de vírgula em arrays para o .NET)
         const newCharacter = {
-            name,
+            nome,
             imageUrl,
             // .NET/C# geralmente espera arrays de string
             films: films.split(',').map(item => item.trim()).filter(item => item.length > 0), 
@@ -54,7 +54,7 @@ function InsertPage() {
             }
 
             // 3. Sucesso: Limpa o formulário e exibe mensagem
-            setStatusMessage({ type: 'success', message: `Personagem "${name}" cadastrado com sucesso!` });
+            setStatusMessage({ type: 'success', message: `Personagem "${nome}" cadastrado com sucesso!` });
             setName('');
             setImageUrl('');
             setFilms('');
@@ -87,7 +87,7 @@ function InsertPage() {
                   required
                   fullWidth
                   label="Nome do Personagem"
-                  value={name}
+                  value={nome}
                   onChange={(e) => setName(e.target.value)}
                   variant="outlined"
                   disabled={loading}
