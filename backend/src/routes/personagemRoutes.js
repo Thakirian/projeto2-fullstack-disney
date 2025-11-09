@@ -58,4 +58,48 @@ router.get('/personagens', authMiddleware, (req, res) => {
   });
 });
 
+// REQUISITO 3: ROTA DE INSERÇÃO (POST /api/personagens)
+
+// Protegida pelo authMiddleware
+router.post('/personagens', authMiddleware, (req, res) => {
+
+  // 1. Pega os dados do corpo da requisição
+  const { nome, imageUrl, filmes, tvShows } = req.body;
+
+  // 2. Validação de preenchimento no servidor 
+  if (!nome) {
+    return res.status(400).json({ message: "O campo 'nome' é obrigatório." });
+  }
+
+  // 3. Prepara a query SQL para inserção (Requisito de segurança)
+  const query = `
+    INSERT INTO personagens (nome, imageUrl, filmes, tvShows) 
+    VALUES (?, ?, ?, ?)
+  `;
+  
+  // O JSON.stringify é útil se 'filmes' ou 'tvShows' forem arrays
+  const params = [
+    nome, 
+    imageUrl || null, 
+    filmes ? JSON.stringify(filmes) : null, 
+    tvShows ? JSON.stringify(tvShows) : null
+  ];
+
+  // 4. Executa a inserção no banco
+  db.run(query, params, function (err) {
+    if (err) {
+      // Log de erro
+      console.error('Erro no banco de dados ao inserir personagem:', err.message);
+      return res.status(500).json({ message: "Erro interno do servidor." });
+    }
+    
+    // 5. Retorna sucesso
+    console.log(`Usuário ${req.user.email} inseriu um novo personagem com ID: ${this.lastID}`);
+    res.status(201).json({ 
+      message: "Personagem criado com sucesso!", 
+      id: this.lastID 
+    });
+  });
+});
+
 export default router;
