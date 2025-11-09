@@ -1,6 +1,6 @@
-// backend/index.js
 import express from 'express';
 import cors from 'cors';
+import db from './src/config/database.js';
 
 const app = express();
 const PORT = 3001; 
