@@ -1,41 +1,50 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import ProtectedRoute from './components/ProtectedRoute'; // << NOVO IMPORT
+
+// Importa as novas páginas
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-import InsertPage from './pages/InsertPage'; 
+import InsertPage from './pages/InsertPage';
 
-function App() {
-  // Simulação de autenticação: Iremos implementar a lógica real depois.
-  const isAuthenticated = true; 
-  
-  // Componente Auxiliar para envolver o layout base (opcionalmente)
-  const Layout = ({ children }) => (
+// Componente Auxiliar para envolver o layout base
+const Layout = ({ children }) => (
+  <>
+    <NavBar /> 
     <div style={{ padding: '0 20px' }}>
-      {/* Aqui você pode adicionar um componente de NavBar futuro, se houver */}
       {children}
     </div>
-  );
+  </>
+);
+
+
+function App() {
+  // ❌ REMOVEMOS: const isAuthenticated = true;
+  // A lógica agora está no AuthContext e no ProtectedRoute
 
   return (
     <BrowserRouter>
       <Routes>
         
-        {/* Rota de Login (Não exige autenticação) */}
+        {/* Rota de Login: Acesso livre */}
         <Route path="/login" element={<LoginPage />} />
         
-        {/* Rotas Protegidas (Exigem autenticação) */}
+        {/* Rota Padrão: Redireciona a raiz para o Dashboard */}
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        
+        {/* ROTAS PROTEGIDAS 
+          Usamos o ProtectedRoute para garantir que só usuários logados as acessem.
+        */}
         <Route 
           path="/dashboard" 
-          element={isAuthenticated ? <Layout><DashboardPage /></Layout> : <Navigate to="/login" />} 
+          element={<ProtectedRoute element={<Layout><DashboardPage /></Layout>} />} 
         />
         
         <Route 
           path="/insert" 
-          element={isAuthenticated ? <Layout><InsertPage /></Layout> : <Navigate to="/login" />} 
+          element={<ProtectedRoute element={<Layout><InsertPage /></Layout>} />} 
         />
-        
-        {/* Rota Padrão: Redireciona a raiz para o Dashboard */}
-        <Route path="/" element={<Navigate to="/dashboard" />} />
         
         {/* Rota 404 */}
         <Route path="*" element={<h1>404 - Página Não Encontrada</h1>} />
