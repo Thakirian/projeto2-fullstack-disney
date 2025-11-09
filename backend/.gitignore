@@ -7,3 +7,6 @@ database.db
 # Arquivos de log e sistema
 npm-debug.log*
 *.log
+
+# Arquivo de variáveis de ambiente
+.env
