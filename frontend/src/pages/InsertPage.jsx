@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Container, Alert, CircularProgress } from '@mui/material';
-import AuthService from '../services/AuthService'; // << NOVO IMPORT: Para pegar o token
+import AuthService from '../services/AuthService'; 
 
 // CÓDIGO DA THA:
 // 🚨 ATENÇÃO: Se a Tha usar outra porta/URL, mude esta linha.
 const API_URL_INSERT = 'http://localhost:3001/api/personagens'; 
 
 function InsertPage() {
-    const [nome, setName] = useState('');
+    // CORREÇÃO: O estado deve ser nome para sincronizar com o input
+    const [nome, setNome] = useState(''); 
     const [imageUrl, setImageUrl] = useState('');
     const [films, setFilms] = useState('');
     const [tvShows, setTvShows] = useState('');
     const [statusMessage, setStatusMessage] = useState(null);
-    const [loading, setLoading] = useState(false); // << NOVO ESTADO
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e) => { // << TORNADO ASSÍNCRONO
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setStatusMessage(null);
 
@@ -25,12 +26,12 @@ function InsertPage() {
 
         setLoading(true);
 
-        // 1. Prepara os dados (transforma strings de vírgula em arrays para o .NET)
+        // 1. Prepara os dados: Mapeia as strings de vírgula para arrays
         const newCharacter = {
-            nome,
+            nome, // << CORREÇÃO: Envia a chave 'nome' (em português)
             imageUrl,
-            // .NET/C# geralmente espera arrays de string
-            films: films.split(',').map(item => item.trim()).filter(item => item.length > 0), 
+            // Limpa as strings e converte para arrays, removendo entradas vazias
+            filmes: films.split(',').map(item => item.trim()).filter(item => item.length > 0), 
             tvShows: tvShows.split(',').map(item => item.trim()).filter(item => item.length > 0),
         };
         
@@ -42,20 +43,19 @@ function InsertPage() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // 🔑 Envia o token
+                    'Authorization': `Bearer ${token}` 
                 },
                 body: JSON.stringify(newCharacter),
             });
 
             if (!response.ok) {
-                // Lidar com erros específicos da API
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Falha ao cadastrar personagem.');
             }
 
             // 3. Sucesso: Limpa o formulário e exibe mensagem
             setStatusMessage({ type: 'success', message: `Personagem "${nome}" cadastrado com sucesso!` });
-            setName('');
+            setNome('');
             setImageUrl('');
             setFilms('');
             setTvShows('');
@@ -82,13 +82,12 @@ function InsertPage() {
 
             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 
-                {/* Campos do Formulário (Adicionado 'disabled={loading}') */}
                 <TextField
                   required
                   fullWidth
                   label="Nome do Personagem"
                   value={nome}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setNome(e.target.value)}
                   variant="outlined"
                   disabled={loading}
                 />

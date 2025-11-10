@@ -6,7 +6,6 @@ import CharacterDetailsModal from '../components/CharacterDetailsModal';
 import { SearchContext } from '../contexts/SearchContext';
 import logo from '../image/logo.png';
 import '../App.css'; 
-// NOTE: O import do CSS é mantido aqui, pois esta página contém todo o estilo visual
 
 function DashboardPage() {
   // LÓGICA DO CONTEXTO E ESTADOS
@@ -15,9 +14,8 @@ function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
 
-  // LÓGICA DE BUSCA INICIAL (Anteriormente no App.jsx)
+  // LÓGICA DE BUSCA INICIAL 
   useEffect(() => {
-    // Garante que a lista de personagens é carregada na primeira visita
     if (personagens.length === 0 && !erro) {
        buscarPersonagens(''); 
     }
@@ -36,7 +34,23 @@ function DashboardPage() {
   
   const gridKey = carregando ? 'loading' : 'loaded-' + personagens.length; 
 
-  // RENDERIZAÇÃO VISUAL (Anteriormente no App.jsx)
+  // Mapeamento de personagens com garantia de que a chave 'nome' e 'imageUrl' existem
+  const charactersData = personagens.map(p => ({
+      // Priorizamos a chave em português 'nome', mas aceitamos o 'name' em inglês (o que estava vindo)
+      nome: p.nome || p.name, 
+      
+      // Corrigido: Garantimos que a URL da imagem é passada corretamente
+      imageUrl: p.imageUrl, 
+      
+      // Os dados de aparição são importantes para o modal (mesmo que venham vazios/nulos)
+      filmes: p.filmes || p.films,
+      tvShows: p.tvShows,
+      
+      // Mantém o ID e todas as outras propriedades
+      ...p
+  }));
+
+
   return (
     <Container maxWidth="lg" sx={{ py: 4, minHeight: '100vh' }}>
       
@@ -84,9 +98,10 @@ function DashboardPage() {
       )}
 
       {/* GRID DE CARDS */}
-      {!carregando && !erro && personagens.length > 0 && (
+      {!carregando && !erro && charactersData.length > 0 && (
         <Grid container spacing={4} justifyContent="center" key={gridKey}>
-          {personagens.map((personagem, index) => (
+          {/* Usa o array mapeado charactersData */}
+          {charactersData.map((personagem, index) => (
             <Grid 
               item 
               xs={12} sm={6} md={4} lg={3} 
@@ -96,7 +111,8 @@ function DashboardPage() {
               style={{ animationDelay: `${index * 0.05}s` }} 
             >
               <CharacterCard 
-                name={personagem.name} 
+                // CORREÇÃO FINAL: Passamos a chave 'nome' e a chave 'imageUrl' mapeadas.
+                nome={personagem.nome} 
                 imageUrl={personagem.imageUrl} 
                 onClick={() => handleCardClick(personagem)}
               />
@@ -106,7 +122,7 @@ function DashboardPage() {
       )}
 
       {/* MENSAGEM DE NENHUM ENCONTRADO */}
-      {!carregando && !erro && personagens.length === 0 && (
+      {!carregando && !erro && charactersData.length === 0 && (
          <Alert severity="info" sx={{ mt: 4 }}>
             Nenhum personagem encontrado.
          </Alert>

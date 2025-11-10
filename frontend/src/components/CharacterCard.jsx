@@ -1,7 +1,11 @@
 import React from 'react';
 import { Card, CardMedia, CardContent, Typography } from '@mui/material';
 
-function CharacterCard({ imageUrl, name, onClick }) { 
+function CharacterCard({ imageUrl, nome, onClick }) { 
+  
+  // Usa 'nome' e define o fallback para "Nome Desconhecido"
+  const characterName = nome || "Nome Desconhecido"; 
+    
   return (
     <Card 
       onClick={onClick} 
@@ -26,7 +30,7 @@ function CharacterCard({ imageUrl, name, onClick }) {
           component="img"
           height="230" 
           image={imageUrl}
-          alt={name}
+          alt={characterName} 
           sx={{ objectFit: 'cover' }}
         />
         <CardContent 
@@ -57,7 +61,7 @@ function CharacterCard({ imageUrl, name, onClick }) {
                 maxHeight: '4.8em',       
             }}
           >
-            {name}
+            {characterName} 
           </Typography>
         </CardContent>
     </Card>
