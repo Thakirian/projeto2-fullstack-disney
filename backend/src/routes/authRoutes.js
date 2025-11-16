@@ -1,102 +1,56 @@
+// backend/src/routes/authRoutes.js
 import express from 'express';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import db from '../config/database.js';
+import UsuarioModel from '../models/UsuarioModel.js'; // <-- 1. IMPORTAMOS O MODELO
 
 const router = express.Router();
 
-// O "SEGURANÇA" (Middleware de Autenticação)
-const authMiddleware = (req, res, next) => {
-  // 1. Pega o token do cabeçalho da requisição
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  // 2. Se não tiver token, barra o usuário
-  if (token == null) {
-    return res.status(401).json({ message: "Acesso negado. Token não fornecido." });
-  }
-
-  // 3. Verifica se o token é válido
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      // Log de segurança 
-      console.warn("Tentativa de acesso com token inválido:", err.message);
-      return res.status(403).json({ message: "Token inválido ou expirado." });
-    }
-
-    // 4. Se o token for válido, salva os dados do usuário
-    // na requisição e deixa ele "passar"
-    req.user = user;
-    next();
-  });
-};
-
-// REQUISITO 2: ROTA DE BUSCA (GET /api/personagens)
-router.get('/personagens', authMiddleware, (req, res) => {
-  // ... (código para busca e sanitização mantido)
+// Rota: POST /api/login
+// 2. Transformamos o controlador em "async"
+router.post('/login', async (req, res) => {
   
-  const { nome } = req.query;
-  const searchTerm = nome ? `%${nome}%` : '%';
-  const query = "SELECT * FROM personagens WHERE nome LIKE ?";
+  // 3. Adicionamos um try...catch para lidar com erros do 'await'
+  try {
+    const { email, password } = req.body;
 
-  // 3. Executa a busca no banco
-  db.all(query, [searchTerm], (err, rows) => {
-    if (err) {
-      console.error('Erro no banco de dados ao buscar personagens:', err.message);
-      return res.status(500).json({ message: "Erro interno do servidor." });
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email e senha são obrigatórios." });
     }
 
-    // 🔑 CORREÇÃO CRUCIAL: Converte Strings JSON de volta para Arrays
-    const parsedRows = rows.map(row => {
-        // Tenta fazer o parse, se falhar ou for null, retorna um array vazio.
-        return {
-            ...row,
-            filmes: row.filmes ? JSON.parse(row.filmes) : [],
-            tvShows: row.tvShows ? JSON.parse(row.tvShows) : []
-        };
+    // 4. LÓGICA DO BANCO FOI PARA O MODELO
+    // Trocamos db.get(...) por uma chamada limpa ao modelo
+    const user = await UsuarioModel.findByEmail(email);
+
+    if (!user) {
+      console.warn(`Tentativa de login falhou (usuário não encontrado): ${email}`);
+      return res.status(401).json({ message: "Email ou senha inválidos." });
+    }
+
+    const senhaValida = bcrypt.compareSync(password, user.senha_hash);
+
+    if (!senhaValida) {
+      console.warn(`Tentativa de login falhou (senha inválida) para: ${email}`);
+      return res.status(401).json({ message: "Email ou senha inválidos." });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    console.log(`Usuário ${email} logado com sucesso.`);
+    res.status(200).json({ 
+      message: "Login bem-sucedido!", 
+      token: token 
     });
 
-    // 4. Retorna os resultados com JSONs já convertidos
-    res.status(200).json(parsedRows);
-  });
-});
-
-// REQUISITO 3: ROTA DE INSERÇÃO (POST /api/personagens)
-router.post('/personagens', authMiddleware, (req, res) => {
-  // 1. Pega os dados do corpo da requisição
-  // O Frontend envia 'nome', 'imageUrl', 'filmes', 'tvShows'
-  const { nome, imageUrl, filmes, tvShows } = req.body; 
-
-  // 2. Validação de preenchimento no servidor 
-  if (!nome) {
-    return res.status(400).json({ message: "O campo 'nome' é obrigatório." });
+  } catch (err) {
+    // Se o 'await' do modelo falhar, caímos aqui
+    console.error('Erro na rota de login:', err.message);
+    return res.status(500).json({ message: "Erro interno do servidor." });
   }
-
-  // 3. Prepara a query SQL para inserção
-  const query = `
-    INSERT INTO personagens (nome, imageUrl, filmes, tvShows) 
-    VALUES (?, ?, ?, ?)
-  `;
-  
-  // O JSON.stringify transforma o array do Frontend em uma string para o SQLite
-  const params = [
-    nome, 
-    imageUrl || null, 
-    filmes && filmes.length > 0 ? JSON.stringify(filmes) : null, 
-    tvShows && tvShows.length > 0 ? JSON.stringify(tvShows) : null
-  ];
-
-  // 4. Executa a inserção no banco
-  db.run(query, params, function (err) {
-    if (err) {
-      console.error('Erro no banco de dados ao inserir personagem:', err.message);
-      return res.status(500).json({ message: "Erro interno do servidor." });
-    }
-    
-    res.status(201).json({ 
-      message: "Personagem criado com sucesso!", 
-      id: this.lastID 
-    });
-  });
 });
 
 export default router;
