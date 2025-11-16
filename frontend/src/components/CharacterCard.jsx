@@ -1,19 +1,14 @@
-// src/components/CharacterCard.jsx
 import React from 'react';
 import { Card, CardMedia, CardContent, Typography } from '@mui/material';
 
-// 1. Renomeamos a prop para 'nome' (como você já fez)
 function CharacterCard({ imageUrl, nome, onClick }) { 
 
-  // 2. Definimos nossa imagem reserva
   const placeholderImage = 'https://dummyimage.com/300x200/cccccc/000000.png&text=Disney';
 
-  // 3. Verificação se a URL é um link http válido (nosso "Plano B")
   const finalImageUrl = (imageUrl && imageUrl.startsWith('http')) 
     ? imageUrl 
     : placeholderImage;
-  
-  // 4. Fallback para o nome
+
   const characterName = nome || "Nome Desconhecido"; 
     
   return (
@@ -38,14 +33,13 @@ function CharacterCard({ imageUrl, nome, onClick }) {
         <CardMedia
           component="img"
           height="230" 
-          image={finalImageUrl} // <-- 5. Usamos a URL segura
+          image={finalImageUrl}
           alt={characterName} 
           sx={{ objectFit: 'cover' }}
-          
-          // 6. "Plano C": O paraquedas para links quebrados (404)
+
           onError={(e) => {
-            e.target.onerror = null; // Previne loops infinitos
-            e.target.src = placeholderImage; // Troca a imagem pelo placeholder
+            e.target.onerror = null;
+            e.target.src = placeholderImage;
           }}
         />
         <CardContent 

@@ -1,4 +1,3 @@
-// backend/src/models/PersonagemModel.js
 import db from '../config/database.js';
 
 const PersonagemModel = {
@@ -33,14 +32,13 @@ const PersonagemModel = {
         INSERT INTO personagens (nome, imageUrl, filmes, tvShows) 
         VALUES (?, ?, ?, ?)
       `;
-      
-      // Precisamos usar 'function(err)' para ter acesso ao 'this.lastID'
+
       db.run(query, params, function (err) {
         if (err) {
           console.error("Erro no PersonagemModel.create:", err.message);
           reject(err);
         } else {
-          resolve(this.lastID); // Retorna o ID do item recém-criado
+          resolve(this.lastID);
         }
       });
     });

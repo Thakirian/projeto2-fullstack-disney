@@ -1,11 +1,9 @@
-// backend/src/routes/personagemRoutes.js
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import PersonagemModel from '../models/PersonagemModel.js'; // <-- 1. IMPORTAMOS O MODELO
+import PersonagemModel from '../models/PersonagemModel.js';
 
 const router = express.Router();
 
-// Middleware de Autenticação (continua o mesmo)
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -22,9 +20,6 @@ const authMiddleware = (req, res, next) => {
   });
 };
 
-
-// ROTA DE BUSCA (GET /api/personagens)
-// 2. Transformamos o controlador em "async"
 router.get('/personagens', authMiddleware, async (req, res) => {
   console.log(`Usuário ${req.user.email} está fazendo uma busca...`);
   
@@ -32,10 +27,8 @@ router.get('/personagens', authMiddleware, async (req, res) => {
     const { nome } = req.query;
     const searchTerm = nome ? `%${nome}%` : '%';
 
-    // 3. LÓGICA DO BANCO FOI PARA O MODELO
     const rows = await PersonagemModel.find(searchTerm);
 
-    // Converte Strings JSON de volta para Arrays (lógica do controlador)
     const parsedRows = rows.map(row => ({
       ...row,
       filmes: row.filmes ? JSON.parse(row.filmes) : [],
@@ -50,9 +43,6 @@ router.get('/personagens', authMiddleware, async (req, res) => {
   }
 });
 
-
-// ROTA DE INSERÇÃO (POST /api/personagens)
-// 4. Transformamos o controlador em "async"
 router.post('/personagens', authMiddleware, async (req, res) => {
   try {
     const { nome, imageUrl, filmes, tvShows } = req.body; 
@@ -68,7 +58,6 @@ router.post('/personagens', authMiddleware, async (req, res) => {
       tvShows && tvShows.length > 0 ? JSON.stringify(tvShows) : null
     ];
 
-    // 5. LÓGICA DO BANCO FOI PARA O MODELO
     const newId = await PersonagemModel.create(params);
     
     console.log(`Usuário ${req.user.email} inseriu um novo personagem com ID: ${newId}`);

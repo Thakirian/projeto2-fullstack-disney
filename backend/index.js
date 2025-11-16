@@ -10,12 +10,10 @@ import personagemRoutes from './src/routes/personagemRoutes.js';
 const app = express();
 const PORT = 3001; 
 
-// Middlewares
 app.use(express.json()); 
 app.use(cors()); 
 app.use(compression());
 
-// Uma rota de teste
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Olá do Backend!' });
 });

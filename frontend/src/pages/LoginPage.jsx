@@ -1,41 +1,34 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Container, CircularProgress } from '@mui/material';
-import { useAuth } from '../services/AuthContext'; // << NOVO IMPORT: Hook de autenticação
+import { useAuth } from '../services/AuthContext';
 
 function LoginPage() {
-  // Consumir o hook para ter acesso à função login
   const { login } = useAuth();
     
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false); // << NOVO ESTADO: Loading
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => { // << TORNADO ASSÍNCRONO
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    // 1. Validação básica (mantida)
     if (!email || !password) {
         setError("Por favor, preencha todos os campos.");
         return;
     }
     
-    setLoading(true); // Inicia o loading
+    setLoading(true);
     
-    // 2. Lógica de Envio para o Backend
     try {
-        // A função login é assíncrona e lida com o fetch, token e redirecionamento.
         await login(email, password); 
-        // Em caso de sucesso, o redirecionamento ocorre dentro da função login.
         
     } catch (err) {
-        // Em caso de erro (ex: 401 Unauthorized da Tha), exibe a mensagem de erro.
-        // O erro deve ser a mensagem que vem da API, por isso 'err.message'.
         setError(err.message || 'Erro de conexão ou credenciais inválidas.');
         
     } finally {
-        setLoading(false); // Finaliza o loading
+        setLoading(false);
     }
   };
 
@@ -55,7 +48,6 @@ function LoginPage() {
           Acesso Administrativo
         </Typography>
 
-        {/* Exibição de Erro */}
         {error && (
             <Typography color="error" variant="body2">
                 {error}
@@ -74,7 +66,7 @@ function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           variant="outlined"
-          disabled={loading} // Desabilita o campo durante o loading
+          disabled={loading}
           sx={{ borderRadius: 5 }}
         />
         <TextField
@@ -89,7 +81,7 @@ function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           variant="outlined"
-          disabled={loading} // Desabilita o campo durante o loading
+          disabled={loading}
           sx={{ borderRadius: 5 }}
         />
         
@@ -97,11 +89,10 @@ function LoginPage() {
           type="submit"
           fullWidth
           variant="contained"
-          disabled={loading} // Desabilita o botão durante o loading
+          disabled={loading}
           sx={{ mt: 3, mb: 2, borderRadius: 5, bgcolor: 'primary.main' }}
         >
           {loading ? <CircularProgress size={24} color="inherit" /> : 'Entrar'} 
-          {/* Mostra o spinner ou o texto 'Entrar' */}
         </Button>
       </Box>
     </Container>

@@ -3,14 +3,10 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 
-// ENCONTRAR O CAMINHO DO ARQUIVO DO BANCO DE DADOS
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const DB_PATH = join(__dirname, '..', '..', 'database.db'); 
-
-// CONECTAR AO BANCO DE DADOS (E CRIÁ-LO SE NÃO EXISTIR)
 
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
@@ -21,12 +17,9 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
   }
 });
 
-// FUNÇÃO PARA CRIAR AS TABELAS
-
 function criarTabelas() {
   db.serialize(() => {
 
-    // 1. Tabela de Usuários
     db.run(`
       CREATE TABLE IF NOT EXISTS usuarios (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,7 +34,6 @@ function criarTabelas() {
       }
     });
 
-    // 2. Tabela de Personagens (baseada no P1)
     db.run(`
       CREATE TABLE IF NOT EXISTS personagens (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,13 +49,10 @@ function criarTabelas() {
   });
 }
 
-// FUNÇÃO PARA INSERIR UM USUÁRIO PADRÃO 
-
 function inserirUsuarioAdmin() {
   const adminEmail = 'admin@projeto.com';
   const adminSenha = 'senha123';
 
-  // Criptografa a senha (Requisito de Segurança)
   const senhaHash = bcrypt.hashSync(adminSenha, 10);
 
   const queryBusca = "SELECT * FROM usuarios WHERE email = ?";
@@ -84,5 +73,4 @@ function inserirUsuarioAdmin() {
   });
 }
 
-// Exporta a conexão do banco para ser usada em outros arquivos
 export default db;

@@ -17,28 +17,21 @@ const modalStyle = {
   outline: 'none',
 };
 
-// Componente auxiliar para renderizar listas com conversão de JSON otimizada
 const AppearanceList = ({ title, items, color }) => {
     let parsedItems = [];
-    
-    // Tentativa de parse robusta
+
     if (typeof items === 'string' && items.trim().length > 0) {
         try {
-            // Tenta converter a string JSON para um array
             const tempItems = JSON.parse(items);
-            // Verifica se o resultado é um array antes de usar.
             parsedItems = Array.isArray(tempItems) ? tempItems : [];
         } catch (e) {
-            // Se o JSON.parse falhar, assumimos que é um problema de formatação do banco
             console.error(`Erro ao fazer JSON.parse para ${title}:`, e);
             parsedItems = []; 
         }
     } else if (Array.isArray(items)) {
-        // Se já for um array (melhor cenário), usa-o
         parsedItems = items;
     }
 
-    // Filtra strings vazias que podem ter vindo do parse (ex: de um array ['a', ''])
     parsedItems = parsedItems.filter(item => item && String(item).trim().length > 0);
 
     return (

@@ -1,7 +1,5 @@
-// backend/src/models/UsuarioModel.js
 import db from '../config/database.js';
 
-// Envolvemos a lógica do banco em uma Promise para usar async/await
 const UsuarioModel = {
   /**
    * Encontra um usuário pelo email
@@ -17,7 +15,7 @@ const UsuarioModel = {
           console.error("Erro no UsuarioModel.findByEmail:", err.message);
           reject(err);
         } else {
-          resolve(row); // Retorna a linha (usuário) ou undefined se não achar
+          resolve(row);
         }
       });
     });

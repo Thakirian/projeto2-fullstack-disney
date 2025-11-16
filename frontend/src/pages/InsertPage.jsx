@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Container, Alert, CircularProgress } from '@mui/material';
 import AuthService from '../services/AuthService'; 
 
-// CÓDIGO DA THA:
-// 🚨 ATENÇÃO: Se a Tha usar outra porta/URL, mude esta linha.
 const API_URL_INSERT = 'http://localhost:3001/api/personagens'; 
 
 function InsertPage() {
-    // CORREÇÃO: O estado deve ser nome para sincronizar com o input
     const [nome, setNome] = useState(''); 
     const [imageUrl, setImageUrl] = useState('');
     const [films, setFilms] = useState('');
@@ -26,16 +23,13 @@ function InsertPage() {
 
         setLoading(true);
 
-        // 1. Prepara os dados: Mapeia as strings de vírgula para arrays
         const newCharacter = {
-            nome, // << CORREÇÃO: Envia a chave 'nome' (em português)
+            nome,
             imageUrl,
-            // Limpa as strings e converte para arrays, removendo entradas vazias
             filmes: films.split(',').map(item => item.trim()).filter(item => item.length > 0), 
             tvShows: tvShows.split(',').map(item => item.trim()).filter(item => item.length > 0),
         };
-        
-        // 2. Obtém o token para a requisição protegida
+
         const token = AuthService.getToken();
 
         try {
@@ -53,7 +47,6 @@ function InsertPage() {
                 throw new Error(errorData.message || 'Falha ao cadastrar personagem.');
             }
 
-            // 3. Sucesso: Limpa o formulário e exibe mensagem
             setStatusMessage({ type: 'success', message: `Personagem "${nome}" cadastrado com sucesso!` });
             setNome('');
             setImageUrl('');
@@ -61,7 +54,6 @@ function InsertPage() {
             setTvShows('');
 
         } catch (error) {
-            // 4. Falha: Exibe a mensagem de erro
             setStatusMessage({ type: 'error', message: error.message });
         } finally {
             setLoading(false);
