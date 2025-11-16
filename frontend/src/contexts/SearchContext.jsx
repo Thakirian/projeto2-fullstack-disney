@@ -42,7 +42,7 @@ export function SearchProvider({ children }) {
 
     // 1. Monta a URL da API da Tha (incluindo o filtro de busca)
     const url = query 
-        ? `${API_URL_THAS_BACKEND}?search=${encodeURIComponent(query)}` 
+        ? `${API_URL_THAS_BACKEND}?nome=${encodeURIComponent(query)}` 
         : API_URL_THAS_BACKEND;
 
     // 2. Obtém o token para a requisição protegida

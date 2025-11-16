@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 import express from 'express';
 import cors from 'cors';
-import db from './src/config/database.js';
+import compression from 'compression';
 
 import authRoutes from './src/routes/authRoutes.js';
 import personagemRoutes from './src/routes/personagemRoutes.js';
@@ -13,6 +13,7 @@ const PORT = 3001;
 // Middlewares
 app.use(express.json()); 
 app.use(cors()); 
+app.use(compression());
 
 // Uma rota de teste
 app.get('/api/test', (req, res) => {

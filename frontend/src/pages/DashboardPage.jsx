@@ -103,9 +103,8 @@ function DashboardPage() {
           {/* Usa o array mapeado charactersData */}
           {charactersData.map((personagem, index) => (
             <Grid 
-              item 
               xs={12} sm={6} md={4} lg={3} 
-              key={personagem._id}
+              key={personagem.id}
               sx={{ display: 'flex', justifyContent: 'center' }}
               className="character-entry" 
               style={{ animationDelay: `${index * 0.05}s` }} 
