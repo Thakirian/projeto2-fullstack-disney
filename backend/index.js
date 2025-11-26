@@ -5,6 +5,9 @@ import cors from 'cors';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit'; 
 
+import https from 'https';
+import fs from 'fs';
+
 import logger from './src/config/logger.js'
 import authRoutes from './src/routes/authRoutes.js';
 import personagemRoutes from './src/routes/personagemRoutes.js';
@@ -32,7 +35,19 @@ app.get('/api/test', (req, res) => {
 app.use('/api', authRoutes);
 app.use('/api', personagemRoutes);
 
+try {
+  const privateKey = fs.readFileSync('./certs/key.pem', 'utf8');
+  const certificate = fs.readFileSync('./certs/cert.pem', 'utf8');
+  const credentials = { key: privateKey, cert: certificate };
 
-app.listen(PORT, () => {
-  logger.info(`🚀 Servidor HTTP rodando na porta ${PORT}`);
-});
+  const httpsServer = https.createServer(credentials, app);
+
+  httpsServer.listen(PORT, () => {
+    logger.info(`✅ Servidor HTTPS rodando com segurança na porta ${PORT}`);
+  });
+
+} catch (error) {
+  logger.error("❌ Erro ao iniciar HTTPS. Verifique se rodou o script 'generate_certs.sh'.");
+  logger.error(`Detalhe do erro: ${error.message}`);
+  process.exit(1);
+}

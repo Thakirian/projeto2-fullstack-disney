@@ -1,6 +1,6 @@
 const TOKEN_KEY = 'magic_admin_token';
 
-const API_URL = 'http://localhost:3001/api/login'; 
+const API_URL = 'https://localhost:3001/api/login'; 
 
 const login = async (email, password) => {
     try {

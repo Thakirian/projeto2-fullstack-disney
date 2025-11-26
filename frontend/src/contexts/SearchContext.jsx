@@ -29,7 +29,7 @@ const searchReducer = (state, action) => {
   }
 };
 
-const API_URL_THAS_BACKEND = 'http://localhost:3001/api/personagens';
+const API_URL_THAS_BACKEND = 'https://localhost:3001/api/personagens';
 
 export function SearchProvider({ children }) {
   

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Container, Alert, CircularProgress } from '@mui/material';
 import AuthService from '../services/AuthService'; 
 
-const API_URL_INSERT = 'http://localhost:3001/api/personagens'; 
+const API_URL_INSERT = 'https://localhost:3001/api/personagens'; 
 
 function InsertPage() {
     const [nome, setNome] = useState(''); 
